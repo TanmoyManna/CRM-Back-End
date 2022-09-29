@@ -8,16 +8,10 @@ const userSchema  = new mongoose.Schema({
         type : String,
         required : true
     },
-    userId : {
-        type : String, 
-        unique : true,
-        required : true
-    },
     email : {
         type : String,
         unique : true,
         required : true,
-        minLength : 10,
         lowercase : true
     },
     password : {
@@ -27,8 +21,8 @@ const userSchema  = new mongoose.Schema({
     userType : {
         type : String,
         required : true,
-        default : "CUSTOMER",
-        enum : ['CUSTOMER', 'ENGINEER', 'ADMIN']
+        default : "TELECALLER",
+        enum : ['ADMIN', 'COMPANY_ADMIN', 'TEAM-LEAD', 'TELECALLER']
     },
     userStatus : {
         type : String, 
@@ -47,17 +41,8 @@ const userSchema  = new mongoose.Schema({
         type : Date,
         default : () =>{
             return Date.now();
-        }
-        
+        }        
     },
-    ticketsCreated : {
-        type : [mongoose.SchemaTypes.ObjectId],
-        ref : "Ticket"
-    },
-    ticketAssigned : {
-        type : [mongoose.SchemaTypes.ObjectId],
-        ref : "Ticket"
-    }
 });
 
 module.exports = mongoose.model("User", userSchema);

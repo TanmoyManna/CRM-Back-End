@@ -6,6 +6,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+
 var cors = require('cors');
 app.use(cors());
 
@@ -18,6 +19,8 @@ app.use('/uploads', express.static(fileConfig.renderUrl));
 /**
  * Plugging in the routes
  */
+ require("./routes/auth.route")(app);
+ 
 // To start  our server
 app.listen(serverConfig.PORT, async () => {
   console.log(`Server started on port ${serverConfig.PORT}`);

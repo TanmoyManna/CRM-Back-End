@@ -1,148 +1,149 @@
 /**
  * This file will have the logic to signup and signin users
  */
- const bcrypt = require("bcryptjs");
- const User = require("../models/user.model");
- const jwt = require("jsonwebtoken");
- const authConfig  = require("../configs/auth.config");
+const bcrypt = require("bcryptjs");
+const User = require("../models/user.model");
+const jwt = require("jsonwebtoken");
+const authConfig = require("../configs/auth.config");
+
 
 
 /**
  * Create a function to allow the user to sign
- * 
- * Wheneve a user calls the endpoint :
- * 
  * POST /crm/api/v1/signup  , router should call the below method
- * JSON request body   to be available as JS object  
- * {
- *   
- *  }
  */
-exports.signup = async (req, res )=>{
-    /**
-     * Logic handle the signup
-     */
-try{
-    const userObj = {
-         name : req.body.name,
-         userId : req.body.userId,
-         email : req.body.email,
-         userType : req.body.userType,
-         password : bcrypt.hashSync(req.body.password , 8)
-    }
+exports.signup = async (req, res) => {
+    try {
+        const userObj = {
+            name: req.body.name,
+            email: req.body.email,
+            password: bcrypt.hashSync(req.body.password, 8),
+            userType: req.body.userType,
+        }
+        if (userObj.userType == "TELECALLER") {
+            userObj.userStatus = "PENDING";
+        }
+        const savedUser = await User.create(userObj);
 
-    /**
-     * I need to set the user status
-     */
-    if(!userObj.userType || userObj.userType == "CUSTOMER" ){
-        userObj.userStatus = "APPROVED";
-    }else{
-        userObj.userStatus = "PENDING";
+        const postResponse = {
+            name: savedUser.name,
+            email: savedUser.email,
+            userType: savedUser.userType,
+            userStatus: savedUser.userStatus,
+            createdAt: savedUser.createdAt,
+            updatedAt: savedUser.updatedAt
+        }
+        res.status(201).send(postResponse);
+    } catch (err) {
+        console.log("Error while registering user ", err.message);
+        res.status(500).send({
+            message: "Some internal server error"
+        })
     }
-
-    /**
-     * Insert  the data in the databse
-     */
-    const savedUser  = await User.create(userObj);
-    
-    const postResponse = {
-        name : savedUser.name,
-        userId : savedUser.userId,
-        email : savedUser.email,
-        userType : savedUser.userType,
-        userStatus : savedUser.userStatus,
-        createdAt : savedUser.createdAt,
-        updatedAt : savedUser.updatedAt
-    }
-
-    /**
-     * Return the success response to the customer
-     */
-    res.status(201).send(postResponse);
-}catch(err){
-    console.log("Error while registering user ", err.message);
-    res.status(500).send({
-        message : "Some internal server error"
-    })
-}
 }
 
 
 /**
- * Controller code for the login
+ * Create a function to allow the user to login
+ * POST /crm/api/v1/login  , router should call the below method
  */
+exports.login = async (req, res) => {
+    try {
+        const emailFromReq = req.body.email;
+        const passwordFromReq = req.body.password;
 
-exports.signin = async (req, res) => {
-  try{
+        const userSaved = await User.findOne({ email: emailFromReq });
 
-    /**
-     * Read the userId and password from the request
-     */
-    const userIdFromReq = req.body.userId ;
-    const password = req.body.password ;
+        if (!userSaved) {
+            return res.status(401).send({
+                message: "User id passed is not correct"
+            });
+        }
 
-    /**
-     * Ensure the userId is valid
-     */
-    const userSaved =  await User.findOne({userId : userIdFromReq});
+        /**
+         * Ensure that the password passed is valid
+         * 
+         * we are getting plain text password
+         * in DB we have encrypted password .. bcrypt
+         */
+        const isValidPassword = bcrypt.compareSync(passwordFromReq, userSaved.password);
 
-    if(!userSaved){
-        return res.status(401).send({
-            message : "User id passed is not correct"
+        if (!isValidPassword) {
+            return res.status(401).send({
+                message: "Incorrect password!...."
+            });
+        }
+
+
+        if (userSaved.userStatus != "APPROVED") {
+            return res.status(403).send({
+                message: "User is not approved for the login"
+            })
+        }
+
+        /**
+         * We need to generate the access token ( JWT based )
+         */
+        const token = jwt.sign(
+            { id: userSaved._id },
+            authConfig.secret,
+            { expiresIn: "2h" }
+        )
+
+        res.status(200).send({
+            _id: userSaved._id,
+            name: userSaved.name,
+            email: userSaved.email,
+            userType: userSaved.userType,
+            userStatus: userSaved.userStatus,
+            createdAt: userSaved.createdAt,
+            accessToke: token
+        });
+
+    } catch (err) {
+        console.log("Error while login ", err.message);
+        res.status(500).send({
+            message: "Internal server error"
         })
     }
 
-    /**
-     * Ensure that the password passed is valid
-     * 
-     * plain text password
-     * in DB we have encrypted password .. bcrypt
-     */
-    const isValidPassword  = bcrypt.compareSync(password, userSaved.password);
-
-    if(!isValidPassword){
-        return res.status(401).send({
-            message : "Incorrect password !"
-        })
-    }
-
-    /**
-     * Check if the user is in the approved state
-     */
-    if(userSaved.userStatus != "APPROVED"){
-        return res.status(403).send({
-           message : "User is not approved for the login"
-        })
-    }
-
-    /**
-     * We need to generate the access token ( JWT based )
-     */
-    const token = jwt.sign({
-        id : userSaved.userId
-    },authConfig.secret,{
-        expiresIn : 600
-    })
-
-    /**
-     * Send the response back
-     */
-
-    res.status(200).send({
-        name : userSaved.name,
-        userId : userSaved.userId,
-        email : userSaved.email,
-        userType : userSaved.userType,
-        userStatus : userSaved.userStatus,
-        accessToke : token
-
-    });
-
-}catch(err){
-    console.log("Error while login ", err.message);
-    res.status(500).send({
-        message : "Internal server error"
-    })
 }
-     
-}
+
+
+
+
+
+/**
+ * Create a function to create the admin user
+ * POST /crm/api/v1/admin  , router should call the below method
+ */
+exports.makeAdmin = async (req, res) => {
+    try {
+        const userObj = {
+            name: "Admin",
+            email: "admin@admin.com",
+            password: bcrypt.hashSync("Admin@1234", 8),
+            userType: "ADMIN"
+        };
+
+        const savedUser = await User.create(userObj);
+
+        const postResponse = {
+            _id: savedUser._id,
+            name: savedUser.name,
+            email: savedUser.email,
+            phone: savedUser.phone,
+            userType: savedUser.userType,
+            createdAt: savedUser.createdAt,
+            updatedAt: savedUser.updatedAt,
+        };
+
+        res.status(200).send({ data: postResponse, status: 200 });
+    } catch (err) {
+        console.log("Error while registering user ", err.message);
+        res.status(500).send({
+            message: "Some internal server error",
+            status: 500
+        });
+    }
+};

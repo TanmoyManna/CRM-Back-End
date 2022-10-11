@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     },
     companyEmail: {
         type: String,
+        unique : true,
         required: true,
         lowercase: true
     },
@@ -19,8 +20,11 @@ const userSchema = new mongoose.Schema({
     },
     totalUsers: {
         type: Number,
-        unique: true,
         required: true
+    },
+    currentUsers: {
+        type: Number,
+        default: 0,
     },
     status: {
         type: String,

@@ -32,9 +32,9 @@ const userSchema = new mongoose.Schema({
         default: "ACTIVE",
         enum: ['ACTIVE', 'INACTIVE']
     },
-    teams : {
+    projects : {
         type : [mongoose.SchemaTypes.ObjectId],
-        ref : "Team"
+        ref : "Project"
     },
     employees : {
         type : [mongoose.SchemaTypes.ObjectId],

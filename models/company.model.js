@@ -10,13 +10,13 @@ const userSchema = new mongoose.Schema({
     },
     companyEmail: {
         type: String,
-        unique : true,
+        unique: true,
         required: true,
         lowercase: true
     },
     companyAdmin: {
-        type : mongoose.SchemaTypes.ObjectId,
-        ref : "User"
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "User"
     },
     totalUsers: {
         type: Number,
@@ -32,13 +32,13 @@ const userSchema = new mongoose.Schema({
         default: "ACTIVE",
         enum: ['ACTIVE', 'INACTIVE']
     },
-    teams : {
-        type : [mongoose.SchemaTypes.ObjectId],
-        ref : "Team"
+    projects: {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref: "Project"
     },
-    employees : {
-        type : [mongoose.SchemaTypes.ObjectId],
-        ref : "User"
+    employees: {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref: "User"
     },
     createdAt: {
         type: Date,

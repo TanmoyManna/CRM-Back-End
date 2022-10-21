@@ -5,6 +5,7 @@
 const authController = require("../controllers/auth.controller");
 
 
+
 module.exports = (app) => {
 
     /**
@@ -31,4 +32,6 @@ module.exports = (app) => {
     */
     app.post("/crm/api/v1/auth/admin", authController.makeAdmin);
 
+
+    
 }

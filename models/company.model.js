@@ -32,9 +32,9 @@ const userSchema = new mongoose.Schema({
         default: "ACTIVE",
         enum: ['ACTIVE', 'INACTIVE']
     },
-    projects: {
-        type: [mongoose.SchemaTypes.ObjectId],
-        ref: "Project"
+    projects : {
+        type : [mongoose.SchemaTypes.ObjectId],
+        ref : "Project"
     },
     employees: {
         type: [mongoose.SchemaTypes.ObjectId],
@@ -53,6 +53,15 @@ const userSchema = new mongoose.Schema({
             return Date.now();
         }
     },
+    image:{
+        data:Buffer,
+        contentType:String,
+        required:true,
+    },
+    companyCode:{
+        type:Number,
+        required:true,
+    }
 });
 
 module.exports = mongoose.model("Company", userSchema);

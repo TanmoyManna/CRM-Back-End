@@ -20,6 +20,8 @@ app.use('/uploads', express.static(fileConfig.renderUrl));
  * Plugging in the routes
  */
  require("./routes/auth.route")(app);
+
+ require("./routes/company.route")(app)
  
 // To start  our server
 app.listen(serverConfig.PORT, async () => {
@@ -35,3 +37,4 @@ DB.on("error", () => {
 DB.once("open", () => {
   console.log("Successfully connected to the database");
 });
+//ggg

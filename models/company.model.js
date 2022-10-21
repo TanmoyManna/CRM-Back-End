@@ -53,6 +53,15 @@ const userSchema = new mongoose.Schema({
             return Date.now();
         }
     },
+    image:{
+        data:Buffer,
+        contentType:String,
+        required:true,
+    },
+    companyCode:{
+        type:Number,
+        required:true,
+    }
 });
 
 module.exports = mongoose.model("Company", userSchema);

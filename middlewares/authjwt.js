@@ -31,6 +31,7 @@ const isAdmin = async (req, res, next) => {
   try {
     const userObj = await User.findOne({ userId: req.userId });
     if (userObj && userObj.userType == "ADMIN") {
+      
       next();
     } else {
       return res.status(403).send({
@@ -62,8 +63,8 @@ const isAdminOrOwner = async (req, res, next) => {
     });
   }
 };
-module.exports = {
-  verifytoken: verifytoken,
-  isAdmin: isAdmin,
-  isAdminOrOwner: isAdminOrOwner,
-};
+ module.exports = {
+   verifytoken: verifytoken,
+   isAdmin: isAdmin,
+   isAdminOrOwner: isAdminOrOwner,
+ };

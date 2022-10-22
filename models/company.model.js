@@ -40,6 +40,23 @@ const userSchema = new mongoose.Schema({
         type: [mongoose.SchemaTypes.ObjectId],
         ref: "User"
     },
+    image:{
+        type: String,
+        required:true,
+    },
+    companyCode:{
+        type:Number,
+        required:true,
+    },
+    image:{
+        data:Buffer,
+        contentType:String,
+        required:true,
+    },
+    companyCode:{
+        type:Number,
+        required:true,
+    },
     createdAt: {
         type: Date,
         default: () => {
@@ -53,15 +70,6 @@ const userSchema = new mongoose.Schema({
             return Date.now();
         }
     },
-    image:{
-        data:Buffer,
-        contentType:String,
-        required:true,
-    },
-    companyCode:{
-        type:Number,
-        required:true,
-    }
 });
 
 module.exports = mongoose.model("Company", userSchema);

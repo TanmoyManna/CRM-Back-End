@@ -53,14 +53,14 @@ const userSchema = new mongoose.Schema({
             return Date.now();
         }
     },
-     image:{
-      type:String,
+      image:{
+       type:String,
+          required:true,
+      },
+     companyCode:{
+         type:Number,
          required:true,
-     },
-    companyCode:{
-        type:Number,
-        required:true,
-    }
+     }
 });
 
 module.exports = mongoose.model("Company", userSchema);

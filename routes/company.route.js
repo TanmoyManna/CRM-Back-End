@@ -7,6 +7,9 @@
 
  // Requiring The Authentication Middlewear
  const authjwt=require("../middlewares/authjwt");
+
+ // Reuring The Image Uploading Middlewear
+ const upload=require("../middlewares/imageupload")
  
  module.exports = (app) => {
  
@@ -18,5 +21,5 @@
      * 
      */
       
-       app.post("/crm/api/v1/auth/company",authjwt.verifytoken,authjwt.isAdmin,authjwt.isAdminOrOwner,companyController.postComanyCreation)
+       app.post("/crm/api/v1/auth/company",authjwt.verifytoken,authjwt.isAdmin,authjwt.isAdminOrOwner,upload.single('profileImage'),companyController.postComanyCreation)
  }

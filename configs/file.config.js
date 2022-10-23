@@ -8,6 +8,6 @@ module.exports = {
     // For Local
     renderUrl : 'uploads',
     deleteUrl : './uploads/',
-    companyUrl : './uploads/companies',
+    companyUrl : '../uploads/companies',
     
 }

@@ -4,10 +4,15 @@ exports.userResponse = (Users) => {
   Users.forEach((user) => {
     userResult.push({
       name: user.name,
-      userId: user.userId,
       email: user.email,
+      mobileNo: user.mobileNo,
       userType: user.userType,
       userStatus: user.userStatus,
+      image: user.image,
+      company: user.company,
+      responsibility: user.responsibility,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     });
   });
 

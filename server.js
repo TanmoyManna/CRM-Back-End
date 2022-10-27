@@ -22,6 +22,7 @@ app.use('/uploads', express.static(fileConfig.renderUrl));
 require("./routes/auth.route")(app);
 require("./routes/company.route")(app)
 require("./routes/project.route")(app)
+require("./routes/user.route")(app)
 
 // To start  our server
 app.listen(serverConfig.PORT, async () => {

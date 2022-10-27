@@ -15,26 +15,39 @@ const authConfig = require("../configs/auth.config");
  */
 exports.signup = async (req, res) => {
     try {
+        const companyToBeUpdated = await Company.findOne({_id : req.companyId });
+        if(companyToBeUpdated.currentUsers >= companyToBeUpdated.totalUsers){
+           return res.status(403).send({ massage: "You have reached the max number of Users, Please contact admin for upgradation", status: 403 });
+        }
+
         const userObj = {
             name: req.body.name,
             email: req.body.email,
+            mobileNo: req.body.mobileNo,
             password: bcrypt.hashSync(req.body.password, 8),
             userType: req.body.userType,
+            company: req.companyId
         }
-        if (userObj.userType == "TELECALLER") {
-            userObj.userStatus = "PENDING";
+        if(req.body.userType == 'MANAGER'){
+            userObj['responsibility'] = [req.body.responsibleProject];
         }
         const savedUser = await User.create(userObj);
+
+        companyToBeUpdated.currentUsers += 1;
+        companyToBeUpdated.employees.push(savedUser._id);
+        await companyToBeUpdated.save();
+        
 
         const postResponse = {
             name: savedUser.name,
             email: savedUser.email,
+            mobileNo: savedUser.mobileNo,
             userType: savedUser.userType,
             userStatus: savedUser.userStatus,
             createdAt: savedUser.createdAt,
             updatedAt: savedUser.updatedAt
         }
-        res.status(201).send(postResponse);
+        res.status(200).send({ postResponse, massage: "User created successfully", status: 200 });
     } catch (err) {
         console.log("Error while registering user ", err.message);
         res.status(500).send({

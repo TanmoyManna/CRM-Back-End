@@ -14,6 +14,9 @@ const userSchema  = new mongoose.Schema({
         required : true,
         lowercase : true
     },
+    mobileNo : {
+        type : String
+    },
     password : {
         type : String,
         required : true
@@ -36,6 +39,10 @@ const userSchema  = new mongoose.Schema({
     company: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "Companies"
+    },
+    responsibility: {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref: "Projects"
     },
     createdAt : {
         type : Date,

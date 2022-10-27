@@ -21,7 +21,7 @@ const verifytoken = (req, res, next) => {
       });
     }
     // Fatch the userId from the token and set it to the request object
-    req.userId = decoded.id;
+    req['userId'] = decoded.id;
     next();
   });
 };
@@ -29,9 +29,8 @@ const verifytoken = (req, res, next) => {
 // Middleware to check if user is admin or not
 const isAdmin = async (req, res, next) => {
   try {
-    const userObj = await User.findOne({ userId: req.userId });
-    if (userObj && userObj.userType == "ADMIN") {
-      
+    const userObj = await User.findOne({ _id: req.userId });
+    if (userObj && userObj.userType == 'ADMIN') {      
       next();
     } else {
       return res.status(403).send({
@@ -39,32 +38,36 @@ const isAdmin = async (req, res, next) => {
       });
     }
   } catch {
-    console.log("Error while checking if isAdmin ", err.message);
+    console.log("Error while checking if isAdmin", err.message);
     res.status(500).send({
       message: "Some internal server error",
     });
   }
 };
 
-// Middleware to check if user is admin or owner
-const isAdminOrOwner = async (req, res, next) => {
-  const callingUser = await User.findOne({ userId: req.userId });
-
-  if (callingUser.userType == "ADMIN" || callingUser.userId == req.params.id) {
-    if (req.body.userStatus && callingUser.userType != "ADMIN") {
+// Middleware to check if user is a company Admin
+const isCompanyAdmin = async (req, res, next) => {
+  try {
+    const userObj = await User.findOne({ _id: req.userId });
+    if (userObj && userObj.userType == 'COMPANY_ADMIN') {
+      req['companyId'] = userObj.company;
+      next();
+    } else {
       return res.status(403).send({
-        message: "Only ADMIN is allowed to change Status",
+        message: "Only a Company Admin is Allowed",
       });
     }
-    next();
-  } else {
-    return res.status(403).send({
-      message: "Only ADMIN and USER are authorized",
+  } catch {
+    console.log("Error while checking if isCompanyAdmin", err.message);
+    res.status(500).send({
+      message: "Some internal server error",
     });
   }
 };
+
+
  module.exports = {
    verifytoken: verifytoken,
    isAdmin: isAdmin,
-   isAdminOrOwner: isAdminOrOwner,
+   isCompanyAdmin: isCompanyAdmin
  };

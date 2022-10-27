@@ -22,13 +22,20 @@ const userSchema  = new mongoose.Schema({
         type : String,
         required : true,
         default : "TELECALLER",
-        enum : ['ADMIN', 'COMPANY_ADMIN', 'TEAM-LEAD', 'TELECALLER']
+        enum : ['ADMIN', 'COMPANY_ADMIN', 'MANAGER', 'TELECALLER']
     },
     userStatus : {
         type : String, 
         required : true,
         default : "APPROVED",
         enum : ['APPROVED', 'PENDING', 'REJECTED']
+    },
+    image:{
+        type: String,
+    },
+    company: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Companies"
     },
     createdAt : {
         type : Date,
@@ -45,4 +52,4 @@ const userSchema  = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Users", userSchema);

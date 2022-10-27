@@ -19,17 +19,17 @@ app.use('/uploads', express.static(fileConfig.renderUrl));
 /**
  * Plugging in the routes
  */
- require("./routes/auth.route")(app);
+require("./routes/auth.route")(app);
+require("./routes/company.route")(app)
+require("./routes/project.route")(app)
 
- require("./routes/company.route")(app)
- 
 // To start  our server
 app.listen(serverConfig.PORT, async () => {
   console.log(`Server started on port ${serverConfig.PORT}`);
 });
 
 // To connect to the databse
-mongoose.connect(dbConfig.DB_URL || process.env.MONGODB_URI );
+mongoose.connect(dbConfig.DB_URL || process.env.MONGODB_URI);
 const DB = mongoose.connection;
 DB.on("error", () => {
   console.log("Error while connecting to the database");
@@ -37,4 +37,3 @@ DB.on("error", () => {
 DB.once("open", () => {
   console.log("Successfully connected to the database");
 });
-//ggg

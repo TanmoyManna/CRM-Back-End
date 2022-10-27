@@ -9,5 +9,6 @@ module.exports = {
     renderUrl : 'uploads',
     deleteUrl : './uploads/',
     companyUrl : './uploads/companies',
+    projectUrl : './uploads/projects',
     
 }

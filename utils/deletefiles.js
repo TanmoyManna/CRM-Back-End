@@ -2,7 +2,7 @@
 const file = require("fs");
 const fileP = file.promises;
 const fileConfig = require("../configs/file.config");
-exports.deleteFile = async (path) => {
+exports.deleteFiles = async (path) => {
     try {
         const filePath = fileConfig.deleteUrl;
         const userResult = [];

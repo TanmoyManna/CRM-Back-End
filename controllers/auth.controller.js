@@ -3,6 +3,7 @@
  */
 const bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
+const Company = require("../models/company.model");
 const jwt = require("jsonwebtoken");
 const authConfig = require("../configs/auth.config");
 
@@ -56,7 +57,7 @@ exports.login = async (req, res) => {
 
         if (!userSaved) {
             return res.status(401).send({
-                message: "User id passed is not correct"
+                message: "email passed is not correct"
             });
         }
 
@@ -90,15 +91,22 @@ exports.login = async (req, res) => {
             { expiresIn: "2h" }
         )
 
-        res.status(200).send({
+        const resObject = {
             _id: userSaved._id,
             name: userSaved.name,
             email: userSaved.email,
             userType: userSaved.userType,
             userStatus: userSaved.userStatus,
+            image : userSaved.image,
             createdAt: userSaved.createdAt,
-            accessToke: token
-        });
+            accessToken: token
+        }
+        if(userSaved.userType != 'ADMIN' ){
+            const companyDetails = await Company.findOne({ _id: userSaved.company });
+            resObject['companyDetails'] = companyDetails;
+        }
+        
+        res.status(200).send(resObject);
 
     } catch (err) {
         console.log("Error while login ", err.message);

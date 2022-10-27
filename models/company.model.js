@@ -14,9 +14,14 @@ const userSchema = new mongoose.Schema({
         required: true,
         lowercase: true
     },
+    ownerName: {
+        type: String,
+        required: true
+    },
     companyAdmin: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: "User"
+        ref: "Users",
+        required: true
     },
     totalUsers: {
         type: Number,
@@ -25,6 +30,7 @@ const userSchema = new mongoose.Schema({
     currentUsers: {
         type: Number,
         default: 0,
+        required: true
     },
     status: {
         type: String,
@@ -34,27 +40,14 @@ const userSchema = new mongoose.Schema({
     },
     projects : {
         type : [mongoose.SchemaTypes.ObjectId],
-        ref : "Project"
+        ref : "Projects"
     },
     employees: {
         type: [mongoose.SchemaTypes.ObjectId],
-        ref: "User"
+        ref: "Users"
     },
     image:{
         type: String,
-        required:true,
-    },
-    companyCode:{
-        type:Number,
-        required:true,
-    },
-    image:{
-        data:Buffer,
-        contentType:String,
-        required:true,
-    },
-    companyCode:{
-        type:Number,
         required:true,
     },
     createdAt: {
@@ -72,4 +65,4 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model("Company", userSchema);
+module.exports = mongoose.model("Companies", userSchema);

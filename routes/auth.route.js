@@ -1,7 +1,9 @@
 /**
- * This will have the logic to route the request to different controllers
- */
+* This will have the logic to route the request to different controllers
+*/
 
+// Requiring The Authentication Middlewear
+const authjwt = require("../middlewares/authjwt");
 const authController = require("../controllers/auth.controller");
 
 
@@ -13,7 +15,7 @@ module.exports = (app) => {
      * 
      * POST /crm/api/v1/auth/signup -> auth controller sign up method
      */
-    app.post("/crm/api/v1/auth/signup", authController.signup);
+    app.post("/crm/api/v1/auth/signup", [authjwt.verifytoken, authjwt.isCompanyAdmin], authController.signup);
 
 
     /**
@@ -33,5 +35,5 @@ module.exports = (app) => {
     app.post("/crm/api/v1/auth/admin", authController.makeAdmin);
 
 
-    
+
 }

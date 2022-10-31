@@ -1,0 +1,42 @@
+const allFollowUps = await FollowUp.aggregate([
+            // { $match: { company: req.companyId, leadId: req.query.leadId } },
+            {
+                $lookup: {
+                    from: 'leads', let: { searchId: "$leadId" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $and:
+                                        [
+                                            { $eq: ["$_id", "$$searchId"] }
+                                        ]
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'projects', let: { projectId: "$leadFor" },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $expr:
+                                            {
+                                                $and:
+                                                    [
+                                                        { $eq: ["$_id", "$$projectId"] }
+                                                    ]
+                                            }
+                                        }
+                                    }
+                                ], as: "projectDetails"
+                            }
+                        }
+
+                    ], as: "leadDetails"
+                }
+            }
+        ]);

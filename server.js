@@ -23,7 +23,9 @@ require("./routes/auth.route")(app);
 require("./routes/company.route")(app)
 require("./routes/project.route")(app)
 require("./routes/user.route")(app)
-
+require("./routes/lead.route")(app)
+require("./routes/followup.route")(app)
+require("./routes/sitevisit.route")(app)
 // To start  our server
 app.listen(serverConfig.PORT, async () => {
   console.log(`Server started on port ${serverConfig.PORT}`);

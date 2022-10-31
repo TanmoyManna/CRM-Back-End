@@ -66,8 +66,30 @@ const isCompanyAdmin = async (req, res, next) => {
 };
 
 
+// Middleware to check if user is a company Admin or user
+const isCompanyAdminOrUser = async (req, res, next) => {
+  try {
+    const userObj = await User.findOne({ _id: req.userId });
+    if (userObj && (userObj.userType == 'COMPANY_ADMIN' || userObj.userType == 'MANAGER' || userObj.userType == 'TELECALLER' )) {
+      req['companyId'] = userObj.company;
+      next();
+    } else {
+      return res.status(403).send({
+        message: "Admin is not Allowed",
+      });
+    }
+  } catch {
+    console.log("Error while checking if isCompanyAdminOrUser", err.message);
+    res.status(500).send({
+      message: "Some internal server error",
+    });
+  }
+};
+
+
  module.exports = {
    verifytoken: verifytoken,
    isAdmin: isAdmin,
-   isCompanyAdmin: isCompanyAdmin
+   isCompanyAdmin: isCompanyAdmin,
+   isCompanyAdminOrUser: isCompanyAdminOrUser
  };

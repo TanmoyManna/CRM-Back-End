@@ -44,6 +44,10 @@ const userSchema  = new mongoose.Schema({
         type: [mongoose.SchemaTypes.ObjectId],
         ref: "Projects"
     },
+    assignedLeads: {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref: "Leads"
+    },
     createdAt : {
         type : Date,
         default : () =>{

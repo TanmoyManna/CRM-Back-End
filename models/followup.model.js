@@ -1,32 +1,24 @@
 /**
- * This file will contain the schema of the Projects model
+ * This file will contain the schema of the Follow Up model
  */
 
 const mongoose = require("mongoose");
-const projectSchema = new mongoose.Schema({
-    propertyName: {
-        type: String,
-        required: true
+const followUpSchema = new mongoose.Schema({
+    leadId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Leads"
     },
-    propertyAddress: {
+    comments: {
         type: String,
         required: true,
     },
-    developerName: {
-        type: String,
-        required: true
-    },
-    image:{
-        type: String,
-        required:true,
-    },
-    responsibleManager: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: "Users"
-    },
     company: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: "Companies",
+        ref: "Companies"
+    },
+    createdBy: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Users",
         required: true
     },
     createdAt: {
@@ -44,4 +36,4 @@ const projectSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model("Projects", projectSchema);
+module.exports = mongoose.model("FollowUps", followUpSchema);

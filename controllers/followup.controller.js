@@ -1,3 +1,6 @@
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
 const FollowUp = require("../models/followup.model");
 const Lead = require("../models/lead.model");
 
@@ -33,9 +36,9 @@ exports.createFollowUp = async (req, res) => {
 exports.getFollowUp = async (req, res) => {
     try {
         // const allFollowUps = await FollowUp.find({ company: req.companyId, leadId: req.query.leadId });
-
         const allFollowUps = await FollowUp.aggregate([
-            // { $match: { company: req.companyId, leadId: req.query.leadId } },
+            { $match: { company: req.companyId, leadId: ObjectId(req.query.leadId) } },
+            { $sort: { createdAt : 1 } },
             {
                 $lookup: {
                     from: 'leads',
@@ -57,19 +60,6 @@ exports.getFollowUp = async (req, res) => {
                 }
             }
         ])
-
-        // {$expr:[ { $and: { "_id": "$$searchId" } } ]}
-        // const allFollowUps = await FollowUp.aggregate([
-        //     {
-        //         $lookup:
-        //         {
-        //             from: 'Leads',
-        //             localField: "leadId",
-        //             foreignField: "_id",
-        //             as: "leadDetails"
-        //         }
-        //     }
-        // ])
         res.status(200).send({ allFollowUps, message: "Successfully fetched all Follow Ups", status: 200 });
     } catch (err) {
         console.log("Error while fetching Follow Ups ", err.message);

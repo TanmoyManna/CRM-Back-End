@@ -18,10 +18,11 @@ const mailingService = require("../utils/mailingService");
 exports.signup = async (req, res) => {
     try {
         const companyToBeUpdated = await Company.findOne({ _id: req.companyId });
-        if (companyToBeUpdated.currentUsers >= companyToBeUpdated.totalUsers) {
-            return res.status(403).send({ massage: "You have reached the max number of Users, Please contact admin for upgradation", status: 403 });
-        }
+        // if (companyToBeUpdated.currentUsers >= companyToBeUpdated.totalUsers) {
+        //     return res.status(403).send({ massage: "You have reached the max number of Users, Please contact admin for upgradation", status: 403 });
+        // }
 
+        const password = req.body.password;
         const userObj = {
             name: req.body.name,
             email: req.body.email,
@@ -46,7 +47,7 @@ exports.signup = async (req, res) => {
         password: ${password} \n
         Please change your password as soon as you login. And feel free to contact us for any enquire. \n
         `
-        mailingService.sendMail(sub, body, savedCompany.companyEmail);
+        mailingService.sendMail(sub, body, savedUser.email);
 
         const postResponse = {
             name: savedUser.name,

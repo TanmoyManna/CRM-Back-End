@@ -62,20 +62,90 @@ exports.createLead = async (req, res) => {
 
 exports.getLeads = async (req, res) => {
     try {
-        const allLeads = await Lead.find({company : req.companyId});
-
-        // const allLeads = await Lead.aggregate([
-        //     { $match: { company: req.companyId } },
-        //     {
-        //         $lookup:
-        //         {
-        //             from: 'Projects',
-        //             localField: "_id",
-        //             foreignField: "leadFor",
-        //             as: "leadDetails"
-        //         }
-        //     }
-        // ])
+        // const allLeads = await Lead.find({company : req.companyId});
+        const requestingUser = await User.findById(req.userId);
+        const queryObj = {
+            company: req.companyId
+        };
+        if(requestingUser.userType == 'TELECALLER'){
+            queryObj['assignedTo'] = req.userId;
+        }
+        if(requestingUser.userType == 'MANAGER'){
+            queryObj['assignedTo'] = req.userId;
+        }
+        const allLeads = await Lead.aggregate([
+            { $match: { } },
+            {
+                $lookup: {
+                    from: 'projects',
+                    let: { searchId : "$leadFor" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $and:
+                                        [
+                                            { $eq: ["$_id", "$$searchId"] }
+                                        ]
+                                }
+                            }
+                        }
+                    ], as: "projectDetails"
+                }
+                
+            },
+            {
+                $unwind: '$projectDetails'
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { searchId : "$createdBy" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $and:
+                                        [
+                                            { $eq: ["$_id", "$$searchId"] }
+                                        ]
+                                }
+                            }
+                        }
+                    ], as: "createdBy"
+                }
+            },
+            {
+                $unwind: '$createdBy'
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { searchId : "$assignedTo" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $and:
+                                        [
+                                            { $eq: ["$_id", "$$searchId"] }
+                                        ]
+                                }
+                            }
+                        }
+                    ], as: "assignedTo"
+                }
+            },
+            {
+                $unwind: '$assignedTo'
+            }
+        ])
         res.status(200).send({ allLeads, message: "Successfully fetched all Leads", status: 200 });
     } catch (err) {
         console.log("Error while fetching Companies ", err.message);

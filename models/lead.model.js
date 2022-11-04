@@ -20,14 +20,14 @@ const leadSchema = new mongoose.Schema({
     leadSource: {
         type: String,
         required: true,
-        default: "NONE",
-        enum : ['None', 'Employee_Referral', 'Friends', 'Social_Media', 'Advertisement', 'Cold_Call']
+        default: "None",
+        enum : ['None', 'Face Book', 'Google Ad Works', '99 acres', 'Magic bricks', 'Houesing', 'Channel Partner']
     },
     leadType: {
         type: String,
         required: true,
-        default: "NONE",
-        enum : ['NONE', '1BHK', '2BHK', '3BHK', 'DUPLEX']
+        default: "None",
+        enum : ['None', '1BHK', '2BHK', '3BHK', 'DUPLEX']
     },
     leadFor: {
         type : mongoose.SchemaTypes.ObjectId,
@@ -36,8 +36,8 @@ const leadSchema = new mongoose.Schema({
     leadStatus: {
         type: String,
         required: true,
-        default: "UNATTENDED",
-        enum : ['UNATTENDED', 'FOLLOW_UP', 'SITE_VISIT', 'DEAL_CLOSED', 'LEAD_LOST', 'LEAD_DECLINED']
+        default: "Unattended",
+        enum : ['Unattended', 'Follow Up', 'Site Visit', 'Deal Closed', 'Lead Lost', 'Lead Declined']
     }, 
     comments: {
         type: String,

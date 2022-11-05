@@ -33,6 +33,6 @@ module.exports = (app) => {
   * 
   * GET crm/api/v1/projects -> pPoject Controller getProjects method
   */
-  app.get("/crm/api/v1/projects", [authjwt.verifytoken, authjwt.isCompanyAdmin], projectController.getProjects);
+  app.get("/crm/api/v1/projects", [authjwt.verifytoken, authjwt.isCompanyAdminOrUser], projectController.getProjects);
 
 }

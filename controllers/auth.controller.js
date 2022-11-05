@@ -40,12 +40,21 @@ exports.signup = async (req, res) => {
         companyToBeUpdated.employees.push(savedUser._id);
         await companyToBeUpdated.save();
 
-        const sub = 'Welcome to Adosy CRM';
+        // const sub = 'Welcome to banyantreegroup CRM';
+        // const body = `Welcome Mr. ${savedUser.name},\n
+        // To access please go to our website and login using the following credentials:\n
+        // email: ${savedUser.email} \n
+        // password: ${password} \n
+        // Please change your password as soon as you login. And feel free to contact us for any enquire. \n
+        // `
+        // mailingService.sendMail(sub, body, savedUser.email);
+
+
+        const sub = 'Welcome to banyantreegroup CRM';
         const body = `Welcome Mr. ${savedUser.name},\n
         To access please go to our website and login using the following credentials:\n
         email: ${savedUser.email} \n
         password: ${password} \n
-        Please change your password as soon as you login. And feel free to contact us for any enquire. \n
         `
         mailingService.sendMail(sub, body, savedUser.email);
 

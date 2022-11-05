@@ -1,3 +1,6 @@
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
 const SiteVisit = require("../models/sitevisit.model");
 const Lead = require("../models/lead.model");
 
@@ -33,28 +36,55 @@ exports.createSiteVisit = async (req, res) => {
 
 exports.getSiteVisit = async (req, res) => {
     try {
-        const allSiteVisit = await SiteVisit.find({ company: req.companyId, leadId: req.query.leadId });
+        // const allSiteVisit = await SiteVisit.find({ company: req.companyId, leadId: req.query.leadId });
 
-        // const allFollowUps = await FollowUp.aggregate([
-        //     { $match: { company: req.companyId, leadId: req.query.leadId } },
-        //     { $lookup: { from: 'Leads' }, let: { searchId : { $toObjectId: "$leadId" } },
-        //         pipeline: [
-        //             {$match: {$expr:[ {"_id": "$$searchId"}]}}                   
-        //         ], as: "leadDetails"
-        //     }
-        // ])
-
-        // const allFollowUps = await FollowUp.aggregate([
-        //     {
-        //         $lookup:
-        //         {
-        //             from: 'Leads',
-        //             localField: "leadId",
-        //             foreignField: "_id",
-        //             as: "leadDetails"
-        //         }
-        //     }
-        // ])
+        const allSiteVisit = await SiteVisit.aggregate([
+            { $match: { company: req.companyId, leadId: ObjectId(req.query.leadId) } },
+            { $sort: { createdAt : 1 } },
+            {
+                $lookup: {
+                    from: 'leads',
+                    let: { searchId : "$leadId" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $and:
+                                        [
+                                            { $eq: ["$_id", "$$searchId"] }
+                                        ]
+                                }
+                            }
+                        }
+                    ], as: "leadDetails"
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { searchId: "$createdBy" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $and:
+                                        [
+                                            { $eq: ["$_id", "$$searchId"] }
+                                        ]
+                                }
+                            }
+                        }
+                    ], as: "createdBy"
+                }
+            },
+            {
+                $unwind: '$createdBy'
+            },
+        ])
         res.status(200).send({ allSiteVisit, message: "Successfully fetched all Site Visit", status: 200 });
     } catch (err) {
         console.log("Error while fetching Site Visits ", err.message);

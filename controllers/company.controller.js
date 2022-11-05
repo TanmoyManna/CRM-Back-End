@@ -37,14 +37,22 @@ exports.createComany = async (req, res) => {
         await savedUser.save();
         
 
-        const sub = 'Welcome to Adosy CRM';
-        const body = `Congrats, Mr. ${savedCompany.ownerName}, your company has been successfully registered.\n
+        // const sub = 'Welcome to banyantreegroup CRM';
+        // const body = `Congrats, Mr. ${savedCompany.ownerName}, your company has been successfully registered.\n
+        // To access please go to our website and login using the following credentials:\n
+        // email: ${savedUser.email} \n
+        // password: ${password} \n
+        // Please change your password as soon as you login. And feel free to contact us for any enquire. \n
+        // `
+        // mailingService.sendMail(sub, body, savedCompany.companyEmail);
+
+        const sub = 'Welcome to banyantreegroup CRM';
+        const body = `Welcome Mr. ${savedCompany.ownerName},\n
         To access please go to our website and login using the following credentials:\n
         email: ${savedUser.email} \n
         password: ${password} \n
-        Please change your password as soon as you login. And feel free to contact us for any enquire. \n
         `
-        mailingService.sendMail(sub, body, savedCompany.companyEmail);
+        mailingService.sendMail(sub, body, savedUser.email);
 
         res.status(200).send({ savedCompany, massage: "Company created successfully", status: 200 });
     } catch (err) {

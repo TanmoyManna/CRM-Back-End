@@ -58,7 +58,30 @@ exports.getFollowUp = async (req, res) => {
                         }
                     ], as: "leadDetails"
                 }
-            }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { searchId: "$createdBy" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $and:
+                                        [
+                                            { $eq: ["$_id", "$$searchId"] }
+                                        ]
+                                }
+                            }
+                        }
+                    ], as: "createdBy"
+                }
+            },
+            {
+                $unwind: '$createdBy'
+            },
         ])
         res.status(200).send({ allFollowUps, message: "Successfully fetched all Follow Ups", status: 200 });
     } catch (err) {

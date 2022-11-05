@@ -1,3 +1,6 @@
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
 const User = require("../models/user.model");
 const Lead = require("../models/lead.model");
 
@@ -12,9 +15,10 @@ exports.createLead = async (req, res) => {
         const availableTeleCallers = await User.aggregate([
             { $match: { company: req.companyId, userType: 'TELECALLER', userStatus: 'APPROVED' } },
             { $addFields: { leadsLength: { $size: "$assignedLeads" } } },
-            { $sort: { leadsLength: -1 } }
+            { $sort: { leadsLength: 1 } }
         ]);
         console.log(availableTeleCallers);
+        // return res.status(500).send({  massage: "Lead created successfully", status: 500 });
         if (availableTeleCallers.length == 0) {
             return res.status(404).send({
                 message: "Can't find Tele Callers to assign Leads, Please add Tele Callers first.",
@@ -67,18 +71,39 @@ exports.getLeads = async (req, res) => {
         const queryObj = {
             company: req.companyId
         };
-        if(requestingUser.userType == 'TELECALLER'){
-            queryObj['assignedTo'] = req.userId;
+        if (requestingUser.userType == 'TELECALLER') {
+            queryObj['assignedTo'] = ObjectId(req.userId);
         }
-        if(requestingUser.userType == 'MANAGER'){
-            queryObj['assignedTo'] = req.userId;
+        if (requestingUser.userType == 'MANAGER') {
+            queryObj['leadFor'] = { $in: requestingUser.responsibility }
         }
+        if(req.query.keyword){
+            const keyword = req.query.keyword
+            queryObj['$or'] = [{ name: RegExp(keyword, 'i') }, { email: RegExp(keyword, 'i') }, { mobileNo: RegExp(keyword, 'i') }, { leadSource: RegExp(keyword, 'i') }, { leadType: RegExp(keyword, 'i') }]
+        }
+        let dateObj = {
+        }
+        if(req.query.startDate){
+            dateObj['$gte'] = new Date(req.query.startDate)
+        }
+        if(req.query.endDate){
+            dateObj['$lt'] = new Date(req.query.endDate)
+        }
+        if(dateObj.$gte || dateObj.$lt ){
+            queryObj['createdAt'] = dateObj;
+        }
+        console.log(queryObj);
+        // createdAt: {$gte: new Date("2022-10-30T16:22:32.002+00:00"), $lt: new Date("2022-11-02T23:03:26.044+00:00")}
+        // 
         const allLeads = await Lead.aggregate([
-            { $match: { } },
+            {
+                $match: queryObj
+            },
+            { $sort: { createdAt : 1 } },
             {
                 $lookup: {
                     from: 'projects',
-                    let: { searchId : "$leadFor" },
+                    let: { searchId: "$leadFor" },
                     pipeline: [
                         {
                             $match:
@@ -94,7 +119,6 @@ exports.getLeads = async (req, res) => {
                         }
                     ], as: "projectDetails"
                 }
-                
             },
             {
                 $unwind: '$projectDetails'
@@ -102,7 +126,7 @@ exports.getLeads = async (req, res) => {
             {
                 $lookup: {
                     from: 'users',
-                    let: { searchId : "$createdBy" },
+                    let: { searchId: "$createdBy" },
                     pipeline: [
                         {
                             $match:
@@ -125,7 +149,7 @@ exports.getLeads = async (req, res) => {
             {
                 $lookup: {
                     from: 'users',
-                    let: { searchId : "$assignedTo" },
+                    let: { searchId: "$assignedTo" },
                     pipeline: [
                         {
                             $match:
@@ -148,7 +172,7 @@ exports.getLeads = async (req, res) => {
         ])
         res.status(200).send({ allLeads, message: "Successfully fetched all Leads", status: 200 });
     } catch (err) {
-        console.log("Error while fetching Companies ", err.message);
+        console.log("Error while fetching Leads ", err.message);
         res.status(500).send({
             message: "Some internal server error",
             status: 500

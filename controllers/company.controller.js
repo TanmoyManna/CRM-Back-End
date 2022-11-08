@@ -1,7 +1,7 @@
 const Company = require("../models/company.model");
 const User = require("../models/user.model");
 
-const fileDelete = require("../utils/deletefiles");
+// const fileDelete = require("../utils/deletefiles");
 const passwordGenerator = require("../utils/passwordGenerator");
 const mailingService = require("../utils/mailingService");
 

@@ -36,8 +36,33 @@ exports.createFollowUp = async (req, res) => {
 exports.getFollowUp = async (req, res) => {
     try {
         // const allFollowUps = await FollowUp.find({ company: req.companyId, leadId: req.query.leadId });
+        const queryObj = {
+            company: req.companyId
+        };
+        if(req.query.leadId){
+            queryObj['leadId'] = ObjectId(req.query.leadId);
+        }
+        if(req.query.keyword){
+            const keyword = req.query.keyword
+            queryObj['$or'] = [{ name: RegExp(keyword, 'i') }, { email: RegExp(keyword, 'i') }, { mobileNo: RegExp(keyword, 'i') }, { leadSource: RegExp(keyword, 'i') }, { leadType: RegExp(keyword, 'i') }]
+        }
+        let dateObj = {
+        }
+        if(req.query.startDate){
+            dateObj['$gte'] = new Date(req.query.startDate)
+        }
+        if(req.query.endDate){
+            dateObj['$lt'] = new Date(req.query.endDate)
+        }
+        if(dateObj.$gte || dateObj.$lt ){
+            queryObj['createdAt'] = dateObj;
+        }
+        console.log(queryObj);
         const allFollowUps = await FollowUp.aggregate([
-            { $match: { company: req.companyId, leadId: ObjectId(req.query.leadId) } },
+            // { $match: { company: req.companyId, leadId: ObjectId(req.query.leadId) } },
+            {
+                $match: queryObj
+            },
             { $sort: { createdAt : 1 } },
             {
                 $lookup: {
@@ -58,6 +83,9 @@ exports.getFollowUp = async (req, res) => {
                         }
                     ], as: "leadDetails"
                 }
+            },
+            {
+                $unwind: '$leadDetails'
             },
             {
                 $lookup: {

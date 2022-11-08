@@ -17,6 +17,7 @@ module.exports = (app) => {
      */
     app.get("/crm/api/v1/users", [authjwt.verifytoken, authjwt.isCompanyAdmin], userController.getUsers);
 
+    app.get("/crm/api/v1/users/:id", [authjwt.verifytoken], userController.getSingleUser);
 
-
+    app.put("/crm/api/v1/users/:id" , [authjwt.verifytoken], userController.updateUser);
 }

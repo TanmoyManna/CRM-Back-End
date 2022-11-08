@@ -2,7 +2,7 @@ const User = require("../models/user.model");
 const Company = require("../models/company.model");
 const Project = require("../models/projects.model");
 
-const fileDelete = require("../utils/deletefiles");
+// const fileDelete = require("../utils/deletefiles");
 /**
  * This file will have the logic for all operations related to company
  */

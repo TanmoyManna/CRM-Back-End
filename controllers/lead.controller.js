@@ -93,8 +93,6 @@ exports.getLeads = async (req, res) => {
             queryObj['createdAt'] = dateObj;
         }
         console.log(queryObj);
-        // createdAt: {$gte: new Date("2022-10-30T16:22:32.002+00:00"), $lt: new Date("2022-11-02T23:03:26.044+00:00")}
-        // 
         const allLeads = await Lead.aggregate([
             {
                 $match: queryObj

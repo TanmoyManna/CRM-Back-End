@@ -1,14 +1,14 @@
 module.exports = {
     // For Live
-    // renderUrl : 'app/uploads',
-    // deleteUrl : './app/uploads/',
-    // developerUrl : './app/uploads/developers',
-    // propertyUrl : './app/uploads/properties'
+    renderUrl : 'app/uploads',
+    deleteUrl : './app/uploads/',
+    companyUrl : './app/uploads/companies',
+    projectUrl : './app/uploads/projects'
 
     // For Local
-    renderUrl : 'uploads',
-    deleteUrl : './uploads/',
-    companyUrl : './uploads/companies',
-    projectUrl : './uploads/projects',
+    // renderUrl : 'uploads',
+    // deleteUrl : './uploads/',
+    // companyUrl : './uploads/companies',
+    // projectUrl : './uploads/projects',
     
 }
